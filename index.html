@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cebate bien</title>
+    <!-- Favicon usando el logo -->
+    <link rel="icon" href="assets/logo.jpg" type="image/jpeg" sizes="any" />
+    <link rel="shortcut icon" href="assets/logo.jpg" type="image/jpeg" />
+    <link rel="apple-touch-icon" href="assets/logo.jpg" />
+    <link rel="stylesheet" href="mobile.css" media="(max-width: 768px)" />
+    <link rel="stylesheet" href="desktop.css" media="(min-width: 769px)" />
+    <!-- Google Fonts: JetBrains Mono -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <img class="logo" src="assets/logo.jpg" alt="" />
+      <h1 style="font-family: 'JetBrains Mono', monospace; color: #333">
+        "Porque el mate es más que una bebida."🧉
+      </h1>
+    </header>
+
+    <section id="productos">
+      <!-- Las tarjetas se cargarán dinámicamente desde assets/products.json -->
+      <div id="productos-loading" style="opacity: 0.8; padding: 12px 0">
+        Cargando productos...
+      </div>
+      <noscript> Activa JavaScript para ver los productos. </noscript>
+    </section>
+
+    <!-- Carrito flotante -->
+    <div id="carrito-flotante">
+      <div id="carrito-icono">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5C9.8 19.5 10.5 20.2 10.5 21S9.8 22.5 9 22.5 7.5 21.8 7.5 21 8.2 19.5 9 19.5ZM20 19.5C20.8 19.5 21.5 20.2 21.5 21S20.8 22.5 20 22.5 18.5 21.8 18.5 21 19.2 19.5 20 19.5Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span id="contador-carrito">0</span>
+      </div>
+
+      <div id="carrito-contenido" class="carrito-oculto">
+        <div class="carrito-header">
+          <h3>Tu pedido</h3>
+          <button id="cerrar-carrito">×</button>
+        </div>
+        <ul id="lista-carrito"></ul>
+        <div class="carrito-footer">
+          <div class="total-carrito">
+            <strong>Total: $<span id="total-precio">0</span></strong>
+          </div>
+          <button id="vaciar-carrito">Vaciar carrito</button>
+          <button id="enviar-wsp">Enviar por WhatsApp</button>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>
+        &copy; 2025 Cebate Bien. Todos los derechos reservados. |
+        <a
+          href="https://www.instagram.com/cebatebien/"
+          target="_blank"
+          rel="noopener"
+          style="color: #a67c52; text-decoration: underline; font-weight: bold"
+          >instagram</a
+        >
+        |
+        <a
+          href="https://l.instagram.com/?u=https%3A%2F%2Fwww.tiktok.com%2F%40cebatebienoficial%3F_t%3DZM-8ywLPxtrlCw%26_r%3D1%26fbclid%3DPAZXh0bgNhZW0CMTEAAaepGUN2S75HRp_y2B7qX2RMflI6E6jvzeTuavcW59EcZ103JSaimZ_p6FJrEg_aem_UuINxc3cQKbOEISl8w8Q5Q&e=AT0_-Y137vNNygGS4EvAYETgSvxbk4bLxXcNYd9jCBKtHFidAnOp4OJTfkuw4HeQJcuYybV_fK1Dj72tYxbTGSJQDq9u3qNKo4Z1S28"
+          target="_blank"
+          rel="noopener"
+          style="color: #a67c52; text-decoration: underline; font-weight: bold"
+          >tik tok</a
+        >
+      </p>
+    </footer>
+    <script>
+      if (window.innerWidth <= 768) {
+        var s = document.createElement("script");
+        s.src = "mobile.js";
+        document.body.appendChild(s);
+      } else {
+        var s = document.createElement("script");
+        s.src = "desktop.js";
+        document.body.appendChild(s);
+      }
+    </script>
+  </body>
+</html>

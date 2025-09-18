@@ -1,0 +1,119 @@
+[
+  {
+    "id": 1,
+    "nombre": "Mate camionero de algarrobo",
+    "precio": 16000,
+    "imagen": "assets/mate-camionero.jpeg",
+    "alt": "Mate camionero",
+    "caracteristicas": [
+      "Interior de algarrobo",
+      "Virola de acero"
+    ]
+  },
+  {
+    "id": 2,
+    "nombre": "Mate torpedo de algarrobo cincelado",
+    "precio": 24000,
+    "imagen": "assets/mate-torpedo.jpeg",
+    "alt": "Mate torpedo",
+    "caracteristicas": [
+      "Interior de algarrobo",
+      "Virola de alpaca cincelada"
+    ]
+  },
+  {
+    "id": 3,
+    "nombre": "Mate imperial de algarrobo",
+    "precio": 24000,
+    "imagen": "assets/mate-imperial-algarrobo.jpeg",
+    "alt": "Mate imperial de algarrobo",
+    "caracteristicas": [
+      "Interior de algarrobo",
+      "Fleje de alpaca y virola de acero"
+    ]
+  },
+  {
+    "id": 4,
+    "nombre": "Mate Imperial de calabaza",
+    "precio": 45000,
+    "imagen": "assets/4-mate-imperial-de-calabaza-negro.jpeg",
+    "alt": "Mate Imperial de calabaza",
+    "color": "negro",
+    "caracteristicas": [
+      "Forrado en cuero",
+      "Interior de calabaza",
+      "Virola, Fleje y Base de alpaca"
+    ]
+  },
+  {
+    "id": 5,
+    "nombre": "Mate Imperial de calabaza",
+    "precio": 45000,
+    "imagen": "assets/5-mate-imperial-de-calabaza-rojo.jpeg",
+    "alt": "Mate Imperial de calabaza",
+    "color": "rojo",
+    "caracteristicas": [
+      "Forrado en cuero",
+      "Interior de calabaza",
+      "Virola, Fleje y Base de alpaca"
+    ]
+  },
+  {
+    "id": 6,
+    "nombre": "Termo media manija de acero",
+    "precio": 22000,
+    "imagen": "assets/termo-media-manija-de-acero.jpeg",
+    "alt": "Termo media manija de acero",
+    "caracteristicas": [
+      "Termo de acero inoxidable",
+      "Pico cebador"
+    ]
+  },
+  {
+    "id": 7,
+    "nombre": "Termo media manija negro mate",
+    "precio": 24000,
+    "imagen": "assets/7-termo-media-manija-negro-mate.jpeg",
+    "alt": "Termo media manija negro mate",
+    "color": "negro mate",
+    "caracteristicas": [
+      "Interior de acero inoxidable",
+      "Pico cebador"
+    ]
+  },
+  {
+    "id": 8,
+    "nombre": "Bombilla Pico de Loro",
+    "precio": 5000,
+    "imagen": "assets/8-bombilla-pico-de-loro.jpeg",
+    "alt": "Bombilla Pico de Loro",
+    "notaPrecio": "c/u",
+    "caracteristicas": [
+      "Pico de bronce, caño y pala de acero inoxidable",
+      "Medida: 17cm"
+    ]
+  },
+  {
+    "id": 9,
+    "nombre": "Bombillón",
+    "precio": 5000,
+    "imagen": "assets/9-bombillon.jpeg",
+    "alt": "Bombillón",
+    "notaPrecio": "c/u",
+    "caracteristicas": [
+      "Hecho en acero inoxidable",
+      "Medida: 18cm"
+    ]
+  },
+  {
+    "id": 10,
+    "nombre": "Canasta matera",
+    "precio": 11000,
+    "imagen": "assets/10-canasta-matera.jpeg",
+    "alt": "Canasta matera",
+    "caracteristicas": [
+      "Hecha de ecocuero",
+      "Tiene un mango rígido para un mejor agarre"
+    ]
+  }
+]
