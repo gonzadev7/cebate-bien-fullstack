@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Carga y muestra todos los productos
   function loadProducts() {
-    fetch("http://localhost:3000/api/products")
+    fetch("/api/products")
       .then((response) => response.json())
       .then((products) => {
         productList.innerHTML = "";
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("imagen", imagenInput.files[0]);
     }
 
-    const url = isEditing ? `http://localhost:3000/api/products/${id}` : "http://localhost:3000/api/products";
+    const url = isEditing ? `/api/products/${id}` : "/api/products";
     const method = isEditing ? "PUT" : "POST";
 
     fetch(url, {
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!id) return;
 
     if (target.classList.contains("edit-btn")) {
-      fetch(`http://localhost:3000/api/products`)
+      fetch(`/api/products`)
         .then(res => res.json())
         .then(products => {
           const product = products.find(p => p.id == id);
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (target.classList.contains("delete-btn")) {
       if (confirm(`¿Estás seguro de que quieres eliminar el producto con ID ${id}?`)) {
-        fetch(`http://localhost:3000/api/products/${id}`, {
+        fetch(`/api/products/${id}`, {
           method: "DELETE",
         })
           .then((response) => {
