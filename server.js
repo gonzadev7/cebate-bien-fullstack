@@ -38,6 +38,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // -----------------
+// CONFIGURACIÓN DE PLANES
+// -----------------
+const PLANS = {
+  GRATUITO: { limit: 15 },
+  // Puedes añadir más planes si es necesario
+};
+const CURRENT_PLAN = "GRATUITO"; // Cambiar a 'BASICO' o 'PREMIUM' para actualizar el plan
+
+// -----------------
 // 3. MIDDLEWARES
 // -----------------
 app.use(cors());
@@ -70,13 +79,25 @@ app.get("/api/products", async (req, res) => {
 // RUTA POST para AÑADIR un nuevo producto
 app.post("/api/products", upload.single("imagen"), async (req, res) => {
   try {
+    // --- Lógica de Límite de Plan ---
+    const currentProductsSnapshot = await productsCollection.get();
+    const currentProductCount = currentProductsSnapshot.size;
+    const planLimit = PLANS[CURRENT_PLAN].limit;
+
+    if (currentProductCount >= planLimit) {
+      return res.status(403).json({
+        message: `Has alcanzado el límite de ${planLimit} productos para tu plan.`,
+      });
+    }
+    // --- Fin Lógica de Límite de Plan ---
+
     if (!req.file) {
       return res
         .status(400)
         .json({ message: "No se ha subido ninguna imagen." });
     }
 
-    const imagePath = req.file.path.replace(/\\/g, "/");
+    const imagePath = req.file.path.replace(/\/g, "/");
     const newProductData = req.body;
 
     const newProduct = {
@@ -122,7 +143,7 @@ app.put("/api/products/:id", upload.single("imagen"), async (req, res) => {
 
     if (req.file) {
       const oldImagePath = productToUpdate.imagen;
-      const newImagePath = req.file.path.replace(/\\/g, "/");
+      const newImagePath = req.file.path.replace(/\/g, "/");
       updatePayload.imagen = newImagePath;
 
       // Borrar imagen antigua si existe
