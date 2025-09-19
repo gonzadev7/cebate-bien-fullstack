@@ -41,6 +41,7 @@ const upload = multer({ storage: storage });
 // 3. MIDDLEWARES
 // -----------------
 app.use(cors());
+app.use(express.static(__dirname)); // Servir archivos estáticos desde la raíz
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 app.use(express.json());
 
