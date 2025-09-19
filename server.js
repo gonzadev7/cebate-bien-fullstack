@@ -1,11 +1,11 @@
 // -----------------
 // 1. IMPORTACIONES
 // -----------------
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-const multer = require('multer');
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
 
 // -----------------
 // 2. INICIALIZACIÓN Y CONFIGURACIÓN DE MULTER
@@ -15,21 +15,35 @@ const PORT = process.env.PORT || 3000;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'assets/');
+    cb(null, "assets/");
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+    );
+  },
 });
 
 const upload = multer({ storage: storage });
 
 // -----------------
+// CONFIGURACIÓN DE PLANES
+// -----------------
+const PLANS = {
+  GRATUITO: { limit: 15 },
+  BASICO: { limit: 50 },
+  PREMIUM: { limit: Infinity },
+};
+const CURRENT_PLAN = "GRATUITO"; // Cambiar a 'BASICO' o 'PREMIUM' para actualizar el plan
+
+// -----------------
 // 3. MIDDLEWARES
 // -----------------
 app.use(cors());
-app.use(express.static('.'));
+// Servir solo la carpeta de assets para las imágenes
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(express.json());
 
 // -----------------
@@ -37,33 +51,45 @@ app.use(express.json());
 // -----------------
 
 // RUTA GET para obtener todos los productos
-app.get('/api/products', (req, res) => {
-  fs.readFile('assets/products.json', 'utf8', (err, data) => {
+app.get("/api/products", (req, res) => {
+  fs.readFile("assets/products.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: 'Error al leer los productos.' });
+      return res.status(500).json({ message: "Error al leer los productos." });
     }
     res.json(JSON.parse(data));
   });
 });
 
 // RUTA POST para AÑADIR un nuevo producto
-app.post('/api/products', upload.single('imagen'), (req, res) => {
+app.post("/api/products", upload.single("imagen"), (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ message: 'No se ha subido ninguna imagen.' });
+    return res.status(400).json({ message: "No se ha subido ninguna imagen." });
   }
 
   const imagePath = req.file.path.replace(/\\/g, "/");
   const newProductData = req.body;
 
-  fs.readFile('assets/products.json', 'utf8', (err, data) => {
+  fs.readFile("assets/products.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: 'Error al leer la base de datos.' });
+      return res
+        .status(500)
+        .json({ message: "Error al leer la base de datos." });
     }
 
     const products = JSON.parse(data);
-    const maxId = products.reduce((max, p) => p.id > max ? p.id : max, 0);
+    const planLimit = PLANS[CURRENT_PLAN].limit;
+
+    // --- INICIO DE LA LÓGICA DE LÍMITE ---
+    if (products.length >= planLimit) {
+      return res.status(403).json({
+        message: `Has alcanzado el límite de ${planLimit} productos para tu plan. Actualiza a un plan superior para añadir más.`, 
+      });
+    }
+    // --- FIN DE LA LÓGICA DE LÍMITE ---
+
+    const maxId = products.reduce((max, p) => (p.id > max ? p.id : max), 0);
 
     const newProduct = {
       id: maxId + 1,
@@ -71,44 +97,57 @@ app.post('/api/products', upload.single('imagen'), (req, res) => {
       precio: parseInt(newProductData.precio),
       imagen: imagePath,
       alt: newProductData.nombre,
-      caracteristicas: newProductData.caracteristicas.split(',').map(s => s.trim())
+      caracteristicas: newProductData.caracteristicas
+        .split(",")
+        .map((s) => s.trim()),
     };
 
     products.push(newProduct);
 
-    fs.writeFile('assets/products.json', JSON.stringify(products, null, 2), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Error al guardar el producto.' });
+    fs.writeFile(
+      "assets/products.json",
+      JSON.stringify(products, null, 2),
+      (err) => {
+        if (err) {
+          console.error(err);
+          return res
+            .status(500)
+            .json({ message: "Error al guardar el producto." });
+        }
+        res.status(201).json(newProduct);
       }
-      res.status(201).json(newProduct);
-    });
+    );
   });
 });
 
 // RUTA PUT para ACTUALIZAR un producto existente
-app.put('/api/products/:id', upload.single('imagen'), (req, res) => {
+app.put("/api/products/:id", upload.single("imagen"), (req, res) => {
   const idToUpdate = parseInt(req.params.id);
   const updatedData = req.body;
 
-  fs.readFile('assets/products.json', 'utf8', (err, data) => {
+  fs.readFile("assets/products.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: 'Error al leer la base de datos.' });
+      return res
+        .status(500)
+        .json({ message: "Error al leer la base de datos." });
     }
 
     let products = JSON.parse(data);
-    const productIndex = products.findIndex(p => p.id === idToUpdate);
+    const productIndex = products.findIndex((p) => p.id === idToUpdate);
 
     if (productIndex === -1) {
-      return res.status(404).json({ message: 'Producto no encontrado.' });
+      return res.status(404).json({ message: "Producto no encontrado." });
     }
 
     const productToUpdate = products[productIndex];
 
     productToUpdate.nombre = updatedData.nombre || productToUpdate.nombre;
-    productToUpdate.precio = parseInt(updatedData.precio) || productToUpdate.precio;
-    productToUpdate.caracteristicas = updatedData.caracteristicas.split(',').map(s => s.trim()) || productToUpdate.caracteristicas;
+    productToUpdate.precio =
+      parseInt(updatedData.precio) || productToUpdate.precio;
+    productToUpdate.caracteristicas =
+      updatedData.caracteristicas.split(",").map((s) => s.trim()) ||
+      productToUpdate.caracteristicas;
     productToUpdate.alt = updatedData.nombre || productToUpdate.alt;
 
     if (req.file) {
@@ -116,10 +155,10 @@ app.put('/api/products/:id', upload.single('imagen'), (req, res) => {
       const newImagePath = req.file.path.replace(/\\/g, "/");
       productToUpdate.imagen = newImagePath;
 
-      if (oldImagePath && oldImagePath.includes('imagen-')) {
+      if (oldImagePath && oldImagePath.includes("imagen-")) {
         fs.unlink(path.join(__dirname, oldImagePath), (unlinkErr) => {
           if (unlinkErr) {
-            console.error('Error al borrar la imagen antigua:', unlinkErr);
+            console.error("Error al borrar la imagen antigua:", unlinkErr);
           }
         });
       }
@@ -127,49 +166,65 @@ app.put('/api/products/:id', upload.single('imagen'), (req, res) => {
 
     products[productIndex] = productToUpdate;
 
-    fs.writeFile('assets/products.json', JSON.stringify(products, null, 2), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Error al actualizar el producto.' });
+    fs.writeFile(
+      "assets/products.json",
+      JSON.stringify(products, null, 2),
+      (err) => {
+        if (err) {
+          console.error(err);
+          return res
+            .status(500)
+            .json({ message: "Error al actualizar el producto." });
+        }
+        res.status(200).json(productToUpdate);
       }
-      res.status(200).json(productToUpdate);
-    });
+    );
   });
 });
 
 // RUTA DELETE para BORRAR un producto por su ID
-app.delete('/api/products/:id', (req, res) => {
+app.delete("/api/products/:id", (req, res) => {
   const idToDelete = parseInt(req.params.id);
 
-  fs.readFile('assets/products.json', 'utf8', (err, data) => {
+  fs.readFile("assets/products.json", "utf8", (err, data) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: 'Error al leer los productos.' });
+      return res.status(500).json({ message: "Error al leer los productos." });
     }
 
     let products = JSON.parse(data);
-    const productToDelete = products.find(p => p.id === idToDelete);
-    const updatedProducts = products.filter(p => p.id !== idToDelete);
+    const productToDelete = products.find((p) => p.id === idToDelete);
+    const updatedProducts = products.filter((p) => p.id !== idToDelete);
 
     if (products.length === updatedProducts.length) {
-      return res.status(404).json({ message: 'Producto no encontrado.' });
+      return res.status(404).json({ message: "Producto no encontrado." });
     }
 
-    if (productToDelete && productToDelete.imagen && productToDelete.imagen.includes('imagen-')) {
-        fs.unlink(path.join(__dirname, productToDelete.imagen), (unlinkErr) => {
-            if (unlinkErr) {
-                console.error('Error al borrar el archivo de imagen:', unlinkErr);
-            }
-        });
+    if (
+      productToDelete &&
+      productToDelete.imagen &&
+      productToDelete.imagen.includes("imagen-")
+    ) {
+      fs.unlink(path.join(__dirname, productToDelete.imagen), (unlinkErr) => {
+        if (unlinkErr) {
+          console.error("Error al borrar el archivo de imagen:", unlinkErr);
+        }
+      });
     }
 
-    fs.writeFile('assets/products.json', JSON.stringify(updatedProducts, null, 2), (err) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Error al eliminar el producto.' });
+    fs.writeFile(
+      "assets/products.json",
+      JSON.stringify(updatedProducts, null, 2),
+      (err) => {
+        if (err) {
+          console.error(err);
+          return res
+            .status(500)
+            .json({ message: "Error al eliminar el producto." });
+        }
+        res.status(204).send();
       }
-      res.status(204).send();
-    });
+    );
   });
 });
 

@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- CONFIGURACIÓN ---
+  const API_URL = "https://tu-app.onrender.com"; // <-- IMPORTANTE: Reemplaza con la URL de tu backend en Render
+
   // --- ELEMENTOS DEL DOM ---
   const productList = document.getElementById("productList");
   const productForm = document.getElementById("productForm");
@@ -15,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Carga y muestra todos los productos
   function loadProducts() {
-    fetch("/api/products")
+    fetch(`${API_URL}/api/products`)
       .then((response) => response.json())
       .then((products) => {
         productList.innerHTML = "";
@@ -23,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const productDiv = document.createElement("div");
           productDiv.className = "product";
           productDiv.innerHTML = `
-              <img src="${product.imagen}" alt="${product.nombre}">
+              <img src="${API_URL}/${product.imagen}" alt="${product.nombre}">
               <h3>${product.nombre}</h3>
-              <p>Precio: $${product.precio}</p>
+              <p>Precio: ${product.precio}</p>
               <p>ID: ${product.id}</p>
               <button class="edit-btn" data-id="${product.id}">Editar</button>
               <button class="delete-btn" data-id="${product.id}">Eliminar</button>
@@ -79,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("imagen", imagenInput.files[0]);
     }
 
-    const url = isEditing ? `/api/products/${id}` : "/api/products";
+    const url = isEditing ? `${API_URL}/api/products/${id}` : `${API_URL}/api/products`;
     const method = isEditing ? "PUT" : "POST";
 
     fetch(url, {
@@ -112,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!id) return;
 
     if (target.classList.contains("edit-btn")) {
-      fetch(`/api/products`)
+      fetch(`${API_URL}/api/products`)
         .then(res => res.json())
         .then(products => {
           const product = products.find(p => p.id == id);
@@ -124,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (target.classList.contains("delete-btn")) {
       if (confirm(`¿Estás seguro de que quieres eliminar el producto con ID ${id}?`)) {
-        fetch(`/api/products/${id}`, {
+        fetch(`${API_URL}/api/products/${id}`, {
           method: "DELETE",
         })
           .then((response) => {

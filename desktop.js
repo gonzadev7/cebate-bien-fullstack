@@ -1,3 +1,6 @@
+// --- CONFIGURACIÓN ---
+const API_URL = "https://tu-app.onrender.com"; // <-- IMPORTANTE: Reemplaza con la URL de tu backend en Render
+
 // Lupa sobre la imagen ampliada en el overlay
 document.addEventListener("mousemove", function (e) {
   const lens = document.querySelector(".zoom-lens");
@@ -62,12 +65,12 @@ document.addEventListener(
   },
   true
 );
-// --- Carga de productos desde JSON y render dinámico ---
+// --- Carga de productos desde la API y render dinámico ---
 async function cargarProductos() {
   const contenedor = document.getElementById("productos");
   try {
-    const res = await fetch("assets/products.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("No se pudo cargar products.json");
+    const res = await fetch(`${API_URL}/api/products`, { cache: "no-store" });
+    if (!res.ok) throw new Error("No se pudo cargar la API de productos");
     const productos = await res.json();
     renderizarProductos(productos);
   } catch (err) {
@@ -82,7 +85,7 @@ function crearCard(producto) {
   card.className = "card";
   const imgSrc =
     producto.imagen && String(producto.imagen).trim() !== ""
-      ? producto.imagen
+      ? `${API_URL}/${producto.imagen}`
       : "assets/logo2.png";
   const precioNum = Number(producto.precio) || 0;
   card.innerHTML = `
@@ -97,7 +100,7 @@ function crearCard(producto) {
             .join("")}</ul>`
         : ""
     }
-    <div class="precio">$${formatearPrecio(precioNum)}${
+    <div class="precio">${formatearPrecio(precioNum)}${
     producto.notaPrecio ? ` (${producto.notaPrecio})` : ""
   }</div>
     <button class="btn-agregar" data-nombre="${
