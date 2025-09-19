@@ -32,10 +32,11 @@ function inicializarZoomEnImagenes() {
 }
 inicializarZoomEnImagenes();
 
+const API_URL = "https://cebate-bien-tienda.onrender.com";
 // --- Carga de productos desde JSON y render dinámico ---
 async function cargarProductos() {
   try {
-    const res = await fetch("assets/products.json", { cache: "no-store" });
+    const res = await fetch(`${API_URL}/api/products`, { cache: "no-store" });
     if (!res.ok) throw new Error("No se pudo cargar products.json");
     const productos = await res.json();
     renderizarProductos(productos);
@@ -51,7 +52,7 @@ function crearCard(producto) {
   card.className = "card";
   const imgSrc =
     producto.imagen && String(producto.imagen).trim() !== ""
-      ? producto.imagen
+      ? `${API_URL}/${producto.imagen}`
       : "assets/logo2.png";
   const precioNum = Number(producto.precio) || 0;
   card.innerHTML = `
