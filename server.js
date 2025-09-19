@@ -1,5 +1,5 @@
 // -----------------
-// 1. IMPORTACIONES
+// 1. IMPORTACIONES // Forzando re-deploy
 // -----------------
 const express = require("express");
 const cors = require("cors");
@@ -55,7 +55,10 @@ app.get("/api/products", async (req, res) => {
     if (snapshot.empty) {
       return res.status(200).json([]);
     }
-    const products = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const products = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
     res.status(200).json(products);
   } catch (error) {
     console.error("Error al obtener productos:", error);
@@ -67,10 +70,12 @@ app.get("/api/products", async (req, res) => {
 app.post("/api/products", upload.single("imagen"), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ message: "No se ha subido ninguna imagen." });
+      return res
+        .status(400)
+        .json({ message: "No se ha subido ninguna imagen." });
     }
 
-    const imagePath = req.file.path.replace(/\/g, "/");
+    const imagePath = req.file.path.replace(/\\/g, "/");
     const newProductData = req.body;
 
     const newProduct = {
@@ -116,7 +121,7 @@ app.put("/api/products/:id", upload.single("imagen"), async (req, res) => {
 
     if (req.file) {
       const oldImagePath = productToUpdate.imagen;
-      const newImagePath = req.file.path.replace(/\/g, "/");
+      const newImagePath = req.file.path.replace(/\\/g, "/");
       updatePayload.imagen = newImagePath;
 
       // Borrar imagen antigua si existe
@@ -175,16 +180,20 @@ const migrateData = async () => {
   try {
     const snapshot = await productsCollection.get();
     if (!snapshot.empty) {
-      console.log("La base de datos de Firestore ya tiene productos. No se requiere migración.");
+      console.log(
+        "La base de datos de Firestore ya tiene productos. No se requiere migración."
+      );
       return;
     }
 
-    console.log("Base de datos vacía, iniciando migración desde products.json...");
+    console.log(
+      "Base de datos vacía, iniciando migración desde products.json..."
+    );
     const data = await fs.readFile("assets/products.json", "utf8");
     const products = JSON.parse(data);
 
     const batch = db.batch();
-    products.forEach(product => {
+    products.forEach((product) => {
       // Firestore generará IDs automáticos, eliminamos los viejos
       const { id, ...productData } = product;
       const docRef = productsCollection.doc(); // Nuevo documento con ID automático
@@ -192,8 +201,9 @@ const migrateData = async () => {
     });
 
     await batch.commit();
-    console.log(`Migración completada: ${products.length} productos importados a Firestore.`);
-
+    console.log(
+      `Migración completada: ${products.length} productos importados a Firestore.`
+    );
   } catch (error) {
     console.error("Error durante la migración de datos:", error);
     // No detenemos el servidor si la migración falla, pero sí lo advertimos.
