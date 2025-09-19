@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   // --- CONFIGURACIÓN ---
-  const API_URL = "https://tu-app.onrender.com"; // <-- IMPORTANTE: Reemplaza con la URL de tu backend en Render
+  const API_URL = "https://cebate-bien-tienda.onrender.com";
 
   // --- ELEMENTOS DEL DOM ---
   const productList = document.getElementById("productList");
